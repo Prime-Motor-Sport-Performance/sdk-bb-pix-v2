@@ -1,0 +1,12 @@
+{
+  "name": "prime-motorsport-performance/bb-pix-v2",
+  "description": "Cliente API para interagir com a API de PIX v2 do Banco do Brasil",
+  "autoload": {
+    "psr-4": {
+      "PIXService\\": "src/" 
+    }
+  },
+  "require": {
+    "guzzlehttp/guzzle": "^7.0"
+  }
+}
