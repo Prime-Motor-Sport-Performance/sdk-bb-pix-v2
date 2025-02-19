@@ -3,10 +3,12 @@
   "description": "Cliente API para interagir com a API de PIX v2 do Banco do Brasil",
   "autoload": {
     "psr-4": {
-      "PIXService\\": "src/" 
+      "PixApiBB\\": "src/PixApiBB" 
     }
   },
   "require": {
-    "guzzlehttp/guzzle": "^7.0"
+    "guzzlehttp/guzzle": "^7.0",
+    "phpunit/phpunit": "^11.5",
+    "nesbot/carbon": "^3.8"
   }
 }

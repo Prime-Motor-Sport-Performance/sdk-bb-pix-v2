@@ -2,7 +2,7 @@
 
 namespace PixApiBB\Services\Pix\Models;
 
-class PixDevolucao
+class PixDevolucaoModel
 {
   public $id;
   public $rtrId;

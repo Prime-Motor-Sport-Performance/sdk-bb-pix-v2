@@ -2,34 +2,32 @@
 
 namespace PixApiBB\Helpers;
 
+use GuzzleHttp\Psr7\Response as Psr7Response;
+
 class Response
 {
-    public $type; 
-    public $title;
-    public $status;
-    public $detail;
+    public $body;
 
-    public static function make($response)
+    public static function make(Psr7Response $guzzleResponse)
     {
-        return new self(
-            $response->type,
-            $response->title,
-            $response->status,
-            $response->detail,
-        );
+
+        return new self($guzzleResponse);
     }
 
-    public function __construct($type, $title, $status, $detail)
+    public function __construct(Psr7Response $guzzleResponse)
     {
-        $this->type = $type;
-        $this->title = $title;
-        $this->status = $status;
-        $this->detail = $detail;
+        $this->body = json_decode($guzzleResponse->getBody());
     }
 
     public function success() 
     {
-        return $this->status >= 200 || $this->status < 300;
+        if (isset($this->body->status)) {
+
+            return $this->body->status >= 200 && $this->body->status < 300;
+
+        } else {
+            return true;
+        }
     }
 
 }

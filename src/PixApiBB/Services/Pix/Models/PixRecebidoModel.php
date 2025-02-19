@@ -2,7 +2,7 @@
 
 namespace PixApiBB\Services\Pix\Models;
 
-class PixRecebido
+class PixRecebidoModel
 {
   public $endToEndId;
   public $txid;
