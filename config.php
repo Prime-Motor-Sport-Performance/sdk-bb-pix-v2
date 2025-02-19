@@ -6,6 +6,8 @@ return [
   'client_secret' => 'eyJpZCI6ImZmMWU4OTctMCIsImNvZGlnb1B1YmxpY2Fkb3IiOjAsImNvZGlnb1NvZnR3YXJlIjoxMjU3OTYsInNlcXVlbmNpYWxJbnN0YWxhY2FvIjoxLCJzZXF1ZW5jaWFsQ3JlZGVuY2lhbCI6MSwiYW1iaWVudGUiOiJob21vbG9nYWNhbyIsImlhdCI6MTczOTgyNjEyNDEwMn0',
   'developer_application_key' => 'acd7a7170a2dbc18c4bc6b482b5428a6',
   'api_url' => 'https://api.hm.bb.com.br/pix/v2/', 
+  'auth_url' => 'https://oauth.hm.bb.com.br/oauth/token', 
+  'debug_mode' => true, 
 
   'chave_pix_bb_email' => 'hmtestes2@bb.com.br',
   'chave_pix_bb_aleatoria' => '9e881f18-cc66-4fc7-8f2c-a795dbb2bfc1',

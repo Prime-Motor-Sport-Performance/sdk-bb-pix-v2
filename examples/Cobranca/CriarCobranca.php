@@ -1,42 +1,40 @@
 <?php
 
-require __DIR__ . './../vendor/autoload.php'; // Ajuste o caminho se necessário
+require 'vendor/autoload.php'; // Ajuste o caminho se necessário
 
-use Carbon\Carbon;
 use PixApiBB\API\API;
-use PixApiBB\Services\Pix\Pix;
+use PixApiBB\Services\Cobranca\Cobranca;
 
-$config = require('config.php'); 
+$config = require('config.php');
 
 $api = API::make(
   $config['client_id'],
   $config['client_secret'],
   $config['developer_application_key'],
   $config['api_url'],
+  $config['auth_url'],
+  $config['debug_mode'],
 );
 
-$pix = Pix::make($api);
+$pixCobranca = Cobranca::make($api);
 
-$dataInicio = Carbon::parse('2020-04-01 23:59:59')->toIso8601String();
-$dataFim = Carbon::parse('2020-04-05 23:59:59')->toIso8601String();
-$txId = "142314";
-$txIdPresente = false;
-$devolucaoPresente = false;
-$cpf = "34234233123";
-$cnpj = "";
-$paginaAtual = 0;
-$itensPorPagina = 100;
-
-$result = $pix->consultarRecebidos(
-  $dataInicio,
-  $dataFim,
-  $txId,
-  $txIdPresente,
-  $devolucaoPresente,
-  $cpf,
-  $cnpj,
-  $paginaAtual,
-  $itensPorPagina
+$result = $pixCobranca->criar(
+  3600,
+  "12345678000195",
+  "Empresa de Serviços SA",
+  "37.00",
+  "9e881f18-cc66-4fc7-8f2c-a795dbb2bfc1",
+  "Serviço realizado.",
+  [
+    [
+      "nome" => "Campo 1",
+      "valor" => "Informação Adicional1 do PSP-Recebedor"
+    ],
+    [
+      "nome" => "Campo 2",
+      "valor" => "Informação Adicional2 do PSP-Recebedor"
+    ]
+  ]
 );
 
 var_dump($result);

@@ -6,21 +6,26 @@ use Exception;
 use GuzzleHttp\Client;
 use PixApiBB\Helpers\Response;
 use PixApiBB\API\API;
+use PixApiBB\Services\Auth\ClientCredentials\ClientCredentials;
+use PixApiBB\Services\Auth\ClientCredentials\IClientCredentials;
 
 class Service
 {
   protected array $exceptions;
   protected Client $guzzleClient;
   protected API $api;
+  protected IClientCredentials $clientCredentials;
 
   public function __construct($api)
   {
+
+    $this->clientCredentials = ClientCredentials::make($api);
 
     $this->api = $api;
 
     $this->guzzleClient = new Client([
       'http_errors' => false,
-      'debug' => true,
+      'debug' => $api->debugMode,
       'base_uri' => $api->apiUrl,
       'timeout' => 10,
       'curl' => [
@@ -32,12 +37,14 @@ class Service
 
   protected function throwException(Response $response)
   {
-    $exceptionMessage = "Title: " . $response->body->title . " Detail: " . $response->body->detail;
+   
+    $exceptionMessage = json_encode($response->body);
 
-    if (array_key_exists($response->body->status, $this->exceptions)) {
+    if (array_key_exists($response->guzzleResponse->getStatusCode(), $this->exceptions)) {
       throw new ($this->exceptions[$response->body->status])($exceptionMessage);
     } else {
       throw new Exception('[Unknown Exception] ' . $exceptionMessage);
     }
+
   }
 }

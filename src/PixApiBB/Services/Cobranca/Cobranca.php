@@ -2,22 +2,39 @@
 
 namespace PixApiBB\Services\Cobranca;
 
+use Exception;
+use PixApiBB\API\API;
 use PixApiBB\Helpers\Response;
-use PixApiBB\Services\Auth\IClientCredentials;
+use PixApiBB\Services\Auth\ClientCredentials\ClientCredentials;
+use PixApiBB\Services\Auth\ClientCredentials\IClientCredentials;
+use PixApiBB\Services\Cobranca\Exceptions\ForbbidenException;
+use PixApiBB\Services\Cobranca\Exceptions\ProblemaRequisicaoException;
+use PixApiBB\Services\Cobranca\Exceptions\ServicoIndisponivelException;
+use PixApiBB\Services\Cobranca\Exceptions\UnauthorizedException;
+use PixApiBB\Services\Pix\Models\PixCobrancaModel;
+use PixApiBB\Services\Service;
+use stdClass;
 
-class Cobranca implements ICobranca
+class Cobranca extends Service implements ICobranca
 {
-  
-  private IClientCredentials $clientCredentials;
 
-  public static function make(IClientCredentials $clientCredentials)
+  public static function make(API $api)
   {
-    return new self($clientCredentials);
+    return new self($api);
   }
 
-  public function __construct(IClientCredentials $clientCredentials)
+  public function __construct(API $api)
   {
-    $this->clientCredentials = $clientCredentials;
+
+    parent::__construct($api);
+
+    $this->exceptions = [
+      400 => ProblemaRequisicaoException::class,
+      401 => UnauthorizedException::class,
+      403 => ForbbidenException::class,
+      404 => ForbbidenException::class,
+      503 => ServicoIndisponivelException::class,
+    ];
   }
 
   /******************/
@@ -29,24 +46,55 @@ class Cobranca implements ICobranca
    * Method: POST
    * Endpoint: /cob ou Endpoint: /cob/{txid}
    */
-  public function criar($txId = null)
+  public function criar(
+    $calendarioExpiracao,
+    $devedorCnpj,
+    $devedorNome,
+    $valorOriginal,
+    $chave,
+    $solCnpjItAcaoPagador,
+    array $infoAdicionais,
+  )
   {
-    $code = 200;
 
-    switch ($code) {
+    $accessToken = $this->clientCredentials->getAccessToken();
 
-      case 201:
-        return Response::success('Cobrança imediata criada.', []);
-        break;
-      case 400:
-        return Response::error('Requisição com formato inválido.', []);
-        break;
-      case 403:
-        return Response::error('Requisição de participante autenticado que viola alguma regra de autorização.', []);
-        break;
-      case 503:
-        return Response::error('Serviço não está disponível no momento. Serviço solicitado pode estar em manutenção ou fora da janela de funcionamento.', []);
-        break;
+    try {
+
+      $guzzleResponse = $this->guzzleClient->post('cob', [
+        'headers' => [
+          'Authorization' => 'Bearer ' . $accessToken,
+          'Content-Type' => 'application/json',
+        ],
+        'query' => [
+          'gw-dev-app-key' => $this->api->devAppKey
+        ],
+        'json' => [
+          'calendario' => [
+            'expiracao' => $calendarioExpiracao
+          ],
+          'devedor' => [
+            'cnpj' => $devedorCnpj,
+            'nome' => $devedorNome
+          ],
+          'valor' => [
+            'original' => $valorOriginal
+          ],
+          'chave' => $chave,
+          'solcnpjitacaoPagador' => $solCnpjItAcaoPagador,
+          'infoAdicionais' => $infoAdicionais
+        ],
+      ]);
+
+      $response = Response::make($guzzleResponse);
+
+      if ($response->success()) {
+        return $response->body;
+      } else {
+        $this->throwException($response);
+      }
+    } catch (Exception $e) {
+      throw new Exception($e);
     }
   }
 
@@ -65,19 +113,38 @@ class Cobranca implements ICobranca
     int $paginaAtual = 0,
     int $itensPorPagina = 100
   ) {
-    $code = 200;
+    
+    $accessToken = $this->clientCredentials->getAccessToken();
 
-    switch ($code) {
+    try {
 
-      case 201:
-        return Response::success('Lista de cobranças imediatas.', []);
-        break;
-      case 403:
-        return Response::error('Requisição de participante autenticado que viola alguma regra de autorização.', []);
-        break;
-      case 503:
-        return Response::error('Serviço não está disponível no momento. Serviço solicitado pode estar em manutenção ou fora da janela de funcionamento.', []);
-        break;
+      $guzzleResponse = $this->guzzleClient->get('cob', [
+        'headers' => [
+          'Authorization' => 'Bearer ' . $accessToken,
+          // 'Content-Type' => 'application/x-www-form-urlencoded',
+        ],
+        'query' => [
+          'gw-dev-app-key' => $this->api->devAppKey,
+          'dataInicio' => $dataInicio,
+          'dataFim' => $dataFim,
+          'cpf' => $cpf,
+          'cnpj' => $cnpj,
+          'locationPresente' => $locationPresente,
+          'status' => $status,
+          'paginaAtual' => $paginaAtual,
+          'itensPorPagina' => $itensPorPagina,
+        ],
+      ]);
+
+      $response = Response::make($guzzleResponse);
+
+      if ($response->success()) {
+        return $response->body;
+      } else {
+        $this->throwException($response);
+      }
+    } catch (Exception $e) {
+      throw new Exception($e);
     }
   }
 
@@ -108,7 +175,6 @@ class Cobranca implements ICobranca
         return Response::error('Serviço não está disponível no momento. Serviço solicitado pode estar em manutenção ou fora da janela de funcionamento.', []);
         break;
     }
-    
   }
 
   /**

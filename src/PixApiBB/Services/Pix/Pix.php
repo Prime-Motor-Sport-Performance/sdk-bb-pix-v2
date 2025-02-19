@@ -16,8 +16,6 @@ use PixApiBB\Services\Service;
 class Pix extends Service implements IPix
 {
 
-  private IClientCredentials $clientCredentials;
-
   public static function make(API $api)
   {
     return new self($api);
@@ -36,7 +34,6 @@ class Pix extends Service implements IPix
       503 => ServicoIndisponivelException::class,
     ];
 
-    $this->clientCredentials = ClientCredentials::make($api);
   }
 
   /******************/

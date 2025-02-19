@@ -11,17 +11,20 @@ class API
   public $clientSecret;
   public $devAppKey; // "gw-dev-app-key"
 
-  public static function make($clientId, $clientSecret, $devAppKey, $apiUrl = null, $authUrl = null)
+  public $debugMode;
+
+  public static function make($clientId, $clientSecret, $devAppKey, $apiUrl = null, $authUrl = null, $debugMode = false)
   { 
-    return new self($clientId, $clientSecret, $devAppKey, $apiUrl, $authUrl);
+    return new self($clientId, $clientSecret, $devAppKey, $apiUrl, $authUrl, $debugMode);
   }
   
-  public function __construct($clientId, $clientSecret, $devAppKey, $apiUrl = null, $authUrl = null)
+  public function __construct($clientId, $clientSecret, $devAppKey, $apiUrl = null, $authUrl = null, $debugMode = false)
   {
     $this->clientId = $clientId;
     $this->clientSecret = $clientSecret;
     $this->devAppKey = $devAppKey;
     $this->apiUrl = $apiUrl ?? $this->apiUrl;
     $this->authUrl = $authUrl ?? $this->authUrl;
+    $this->debugMode = $debugMode;
   }
 }
