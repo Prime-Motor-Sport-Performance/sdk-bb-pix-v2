@@ -6,7 +6,7 @@ use Carbon\Carbon;
 use PixApiBB\API\API;
 use PixApiBB\Services\Pix\Pix;
 
-$config = require('config.php'); 
+$config = require('config.php');
 
 $api = API::make(
   $config['client_id'],
