@@ -1,6 +1,6 @@
 {
   "name": "prime-motorsport-performance/bb-pix-v2",
-  "description": "Cliente API para interagir com a API de PIX v2 do Banco do Brasil",
+  "description": "SDK para interagir com a API de PIX v2 do Banco do Brasil",
   "autoload": {
     "psr-4": {
       "PixApiBB\\": "src/PixApiBB" 
@@ -10,6 +10,6 @@
     "php": ">=8.2",
     "guzzlehttp/guzzle": "^7.0",
     "phpunit/phpunit": "^11.5",
-    "nesbot/carbon": "^3.8"
+    "nesbot/carbon": "^2.67"
   }
 }
