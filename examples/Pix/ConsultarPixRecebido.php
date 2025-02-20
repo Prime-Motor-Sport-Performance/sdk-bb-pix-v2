@@ -21,29 +21,12 @@ $api = API::make(
 
 $pix = Pix::make($api);
 
-$dataInicio = Carbon::parse('2025-02-19 23:59:59')->toIso8601String();
-$dataFim = Carbon::parse('2025-02-21 23:59:59')->toIso8601String();
-$txId = "142314";
-$txIdPresente = false;
-$devolucaoPresente = false;
-$cpf = "34234233123";
-$cnpj = "";
-$paginaAtual = 0;
-$itensPorPagina = 100;
+$e2eId = "E12345678202009091221abcdef12345";
 
 try {
 
-  $result = $pix->consultarRecebidos(
-    $dataInicio,
-    $dataFim,
-    $txId,
-    $txIdPresente,
-    $devolucaoPresente,
-    $cpf,
-    $cnpj,
-    $paginaAtual,
-    $itensPorPagina
-  );
+  $result = $pix->consultarRecebido($e2eId);
+  var_dump($result);
 
 } catch (ProblemaRequisicaoException $e) {
   var_dump("Problema na requisição.", $e->getMessage());
@@ -56,4 +39,3 @@ try {
 } catch(Exception $e) {
   var_dump("EXCEPT: ", $e->getMessage());
 }
-

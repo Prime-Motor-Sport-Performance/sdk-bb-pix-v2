@@ -20,28 +20,16 @@ $api = API::make(
   $config['debug_mode'],
 );
 
-$dataInicio = Carbon::parse('2025-02-19 00:00:00')->toIso8601String();
-$dataFim = Carbon::parse('2025-02-19 23:59:59')->toIso8601String();
-$cpf = "";
-$cnpj = "12345678000195";
-$paginaAtual = 0;
-$itensPorPagina = 100;
-$locationPresente = false;
-$status = Cobranca::ATIVA;
+$revisao = null;
+$txid = "8JQC71nlw2WLASmqTz9ep4zheZ";
 
 $pixCobranca = Cobranca::make($api);
 
 try {
 
-  $result = $pixCobranca->consultarLista(
-    $dataInicio,
-    $dataFim,
-    $cpf,
-    $cnpj,
-    $locationPresente,
-    $status,
-    $paginaAtual,
-    $itensPorPagina
+  $result = $pixCobranca->consultarComTxId(
+    $txid,
+    $revisao,
   );
 
   var_dump("Result", $result);
@@ -55,4 +43,5 @@ try {
 } catch(Exception $e) {
   var_dump("EXCEPT: ", $e->getMessage());
 } 
+
 

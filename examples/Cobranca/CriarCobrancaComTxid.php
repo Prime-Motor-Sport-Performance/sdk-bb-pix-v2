@@ -54,26 +54,3 @@ try {
 } catch(Exception $e) {
   var_dump("EXCEPT: ", $e->getMessage());
 } 
-
-
-
-// $code = 200;
-
-// switch ($code) {
-
-//   case 201:
-//     return Response::success('Cobrança imediata criada.', []);
-//     break;
-//   case 400:
-//     return Response::error('Requisição com formato inválido.', []);
-//     break;
-//   case 403:
-//     return Response::error('Requisição de participante autenticado que viola alguma regra de autorização.', []);
-//     break;
-//   case 404:
-//     return Response::error('Recurso solicitado não foi encontrado.', []);
-//     break;
-//   case 503:
-//     return Response::error('Serviço não está disponível no momento. Serviço solicitado pode estar em manutenção ou fora da janela de funcionamento.', []);
-//     break;
-// }

@@ -208,52 +208,102 @@ class Cobranca extends Service implements ICobranca
    * Revisar PIX QRCode Dinâmico
    * Method: PATCH
    * Endpoint: /cob
+   * 
+   * Atenção, os valores só poderão ser atualizados caso o status da cobrança seja ATIVA!
    */
-  public function revisarComTxId($txId)
-  {
-    $code = 200;
+  public function revisarComTxId(
+    $txId,
+    $locId = null,
+    $devedorNome = null,
+    $devedorCpf = null,
+    $devedorCnpj = null,
+    $valorOriginal = null,
+    $solicitacaoPagador = null,
+    $status = null
+  ) {
 
-    switch ($code) {
-      case 200:
-        return Response::success('Cobrança imediata revisada. A revisão deve ser incrementada em 1.', []);
-        break;
-      case 400:
-        return Response::error('Requisição com formato inválido.', []);
-        break;
-      case 403:
-        return Response::error('Requisição de participante autenticado que viola alguma regra de autorização.', []);
-        break;
-      case 404:
-        return Response::error('Recurso solicitado não foi encontrado.', []);
-        break;
-      case 503:
-        return Response::error('Serviço não está disponível no momento. Serviço solicitado pode estar em manutenção ou fora da janela de funcionamento.', []);
-        break;
+    $accessToken = $this->clientCredentials->getAccessToken();
+
+    $payload = [];
+
+    if ($locId) {
+      $payload['loc']['id'] = $locId;
+    }
+
+    if ($devedorNome) {
+
+      $payload['devedor']['nome'] = $devedorNome;
+
+      if ($devedorCnpj) {
+        $payload['devedor']['cnpj'] = $devedorCnpj;
+      } else {
+        $payload['devedor']['cpf'] = $devedorCpf;
+      }
+
+    }
+
+    if ($valorOriginal) {
+      $payload['valor']['original'] = $valorOriginal;
+    }
+
+    if ($solicitacaoPagador) {
+      $payload['solicitacaoPagador'] = $solicitacaoPagador;
+    }
+
+    if ($status) {
+      $payload['status'] = $status;
+    }
+
+    try {
+
+      $guzzleResponse = $this->guzzleClient->patch('cob/' . $txId, [
+        'headers' => [
+          'Authorization' => 'Bearer ' . $accessToken,
+          'Content-Type' => 'application/json',
+        ],
+        'query' => [
+          'gw-dev-app-key' => $this->api->devAppKey
+        ],
+        'json' => $payload
+      ]);
+
+      $response = Response::make($guzzleResponse);
+
+      if ($response->success()) {
+        return $response->body;
+      } else {
+        $this->throwException($response);
+      }
+    } catch (Exception $e) {
+      throw new Exception($e);
     }
   }
 
   /**
    * Consultar PIX por TXID
    */
-  public function consultar($txId, $revisao = null)
+  public function consultarComTxId($txId, $revisao = null)
   {
-    $code = 200;
+   
+    $accessToken = $this->clientCredentials->getAccessToken();
 
-    switch ($code) {
-      case 200:
-        return Response::success('Dados da cobrança imediata.', []);
-        break;
-      case 403:
-        return Response::error('Requisição de participante autenticado que viola alguma regra de autorização.', []);
-        break;
-      case 404:
-        return Response::error('Recurso solicitado não foi encontrado.', []);
-        break;
-      case 503:
-        return Response::error('Serviço não está disponível no momento. Serviço solicitado pode estar em manutenção ou fora da janela de funcionamento.', []);
-        break;
+    $guzzleResponse = $this->guzzleClient->get('cob/' . $txId, [
+      'headers' => [
+        'Authorization' => 'Bearer ' . $accessToken,
+        'Content-Type' => 'application/x-www-form-urlencoded',
+      ],
+      'query' => [
+        'gw-dev-app-key' => $this->api->devAppKey,
+        'revisao' => $revisao,
+      ],
+    ]);
+
+    $response = Response::make($guzzleResponse);
+
+    if ($response->success()) {
+      return $response->body;
+    } else {
+      $this->throwException($response);
     }
-
-    return $this;
   }
 }
