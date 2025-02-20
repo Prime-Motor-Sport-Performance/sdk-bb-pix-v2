@@ -18,6 +18,16 @@ use stdClass;
 class Cobranca extends Service implements ICobranca
 {
 
+  // ATIVA: a cobrança Pix foi gerada e está pronta para ser liquidada;
+  // CONCLUIDA: a cobrança Pix foi liquidada. Não se pode alterar e nem cancelar uma cobrança Pix com status “concluída”;
+  // REMOVIDA_PELO_USUARIO_RECEBEDOR: a cobrança Pix foi cancelada (removida) pelo usuário recebedor;
+  // REMOVIDA_PELO_PSP: a cobrança Pix, por conta de algum critério, foi cancelada (removida) pelo Banco.
+
+  public const ATIVA = "ATIVA";
+  public const CONCLUIDA = "CONCLUIDA";
+  public const REMOVIDA_PELO_USUARIO_RECEBEDOR = "REMOVIDA_PELO_USUARIO_RECEBEDOR";
+  public const REMOVIDA_PELO_PSP = "REMOVIDA_PELO_PSP";
+
   public static function make(API $api)
   {
     return new self($api);
@@ -116,36 +126,32 @@ class Cobranca extends Service implements ICobranca
     
     $accessToken = $this->clientCredentials->getAccessToken();
 
-    try {
+    $guzzleResponse = $this->guzzleClient->get('cob', [
+      'headers' => [
+        'Authorization' => 'Bearer ' . $accessToken,
+        'Content-Type' => 'application/x-www-form-urlencoded',
+      ],
+      'query' => [
+        'gw-dev-app-key' => $this->api->devAppKey,
+        'inicio' => $dataInicio,
+        'fim' => $dataFim,
+        'cpf' => $cpf,
+        'cnpj' => $cnpj,
+        'locationPresente' => $locationPresente,
+        'status' => $status,
+        'paginacao.paginaAtual' => $paginaAtual,
+        'paginacao.itensPorPagina' => $itensPorPagina,
+      ],
+    ]);
 
-      $guzzleResponse = $this->guzzleClient->get('cob', [
-        'headers' => [
-          'Authorization' => 'Bearer ' . $accessToken,
-          // 'Content-Type' => 'application/x-www-form-urlencoded',
-        ],
-        'query' => [
-          'gw-dev-app-key' => $this->api->devAppKey,
-          'dataInicio' => $dataInicio,
-          'dataFim' => $dataFim,
-          'cpf' => $cpf,
-          'cnpj' => $cnpj,
-          'locationPresente' => $locationPresente,
-          'status' => $status,
-          'paginaAtual' => $paginaAtual,
-          'itensPorPagina' => $itensPorPagina,
-        ],
-      ]);
+    $response = Response::make($guzzleResponse);
 
-      $response = Response::make($guzzleResponse);
-
-      if ($response->success()) {
-        return $response->body;
-      } else {
-        $this->throwException($response);
-      }
-    } catch (Exception $e) {
-      throw new Exception($e);
+    if ($response->success()) {
+      return $response->body;
+    } else {
+      $this->throwException($response);
     }
+
   }
 
   /**
