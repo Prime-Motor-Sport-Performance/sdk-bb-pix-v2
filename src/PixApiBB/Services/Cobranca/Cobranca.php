@@ -68,43 +68,38 @@ class Cobranca extends Service implements ICobranca
   {
 
     $accessToken = $this->clientCredentials->getAccessToken();
-
-    try {
-
-      $guzzleResponse = $this->guzzleClient->post('cob', [
-        'headers' => [
-          'Authorization' => 'Bearer ' . $accessToken,
-          'Content-Type' => 'application/json',
+    
+    $guzzleResponse = $this->guzzleClient->post('cob', [
+      'headers' => [
+        'Authorization' => 'Bearer ' . $accessToken,
+        'Content-Type' => 'application/json',
+      ],
+      'query' => [
+        'gw-dev-app-key' => $this->api->devAppKey
+      ],
+      'json' => [
+        'calendario' => [
+          'expiracao' => $calendarioExpiracao
         ],
-        'query' => [
-          'gw-dev-app-key' => $this->api->devAppKey
+        'devedor' => [
+          'cnpj' => $devedorCnpj,
+          'nome' => $devedorNome
         ],
-        'json' => [
-          'calendario' => [
-            'expiracao' => $calendarioExpiracao
-          ],
-          'devedor' => [
-            'cnpj' => $devedorCnpj,
-            'nome' => $devedorNome
-          ],
-          'valor' => [
-            'original' => $valorOriginal
-          ],
-          'chave' => $chave,
-          'solcnpjitacaoPagador' => $solCnpjItAcaoPagador,
-          'infoAdicionais' => $infoAdicionais
+        'valor' => [
+          'original' => $valorOriginal
         ],
-      ]);
+        'chave' => $chave,
+        'solcnpjitacaoPagador' => $solCnpjItAcaoPagador,
+        'infoAdicionais' => $infoAdicionais
+      ],
+    ]);
 
-      $response = Response::make($guzzleResponse);
+    $response = Response::make($guzzleResponse);
 
-      if ($response->success()) {
-        return $response->body;
-      } else {
-        $this->throwException($response);
-      }
-    } catch (Exception $e) {
-      throw new Exception($e);
+    if ($response->success()) {
+      return $response->body;
+    } else {
+      $this->throwException($response);
     }
   }
 
@@ -161,26 +156,48 @@ class Cobranca extends Service implements ICobranca
    */
   public function cirarComTxId($txId)
   {
-    $code = 200;
 
-    switch ($code) {
 
-      case 201:
-        return Response::success('Cobrança imediata criada.', []);
-        break;
-      case 400:
-        return Response::error('Requisição com formato inválido.', []);
-        break;
-      case 403:
-        return Response::error('Requisição de participante autenticado que viola alguma regra de autorização.', []);
-        break;
-      case 404:
-        return Response::error('Recurso solicitado não foi encontrado.', []);
-        break;
-      case 503:
-        return Response::error('Serviço não está disponível no momento. Serviço solicitado pode estar em manutenção ou fora da janela de funcionamento.', []);
-        break;
+    $accessToken = $this->clientCredentials->getAccessToken();
+
+    try {
+
+      $guzzleResponse = $this->guzzleClient->post('cob', [
+        'headers' => [
+          'Authorization' => 'Bearer ' . $accessToken,
+          'Content-Type' => 'application/json',
+        ],
+        'query' => [
+          'gw-dev-app-key' => $this->api->devAppKey
+        ],
+        'json' => [
+          'calendario' => [
+            'expiracao' => $calendarioExpiracao
+          ],
+          'devedor' => [
+            'cnpj' => $devedorCnpj,
+            'nome' => $devedorNome
+          ],
+          'valor' => [
+            'original' => $valorOriginal
+          ],
+          'chave' => $chave,
+          'solcnpjitacaoPagador' => $solCnpjItAcaoPagador,
+          'infoAdicionais' => $infoAdicionais
+        ],
+      ]);
+
+      $response = Response::make($guzzleResponse);
+
+      if ($response->success()) {
+        return $response->body;
+      } else {
+        $this->throwException($response);
+      }
+    } catch (Exception $e) {
+      throw new Exception($e);
     }
+    
   }
 
   /**
