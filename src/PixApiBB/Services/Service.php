@@ -41,7 +41,7 @@ class Service
     $exceptionMessage = json_encode($response->body);
 
     if (array_key_exists($response->guzzleResponse->getStatusCode(), $this->exceptions)) {
-      throw new ($this->exceptions[$response->body->status])($exceptionMessage);
+      throw new ($this->exceptions[$response->guzzleResponse->getStatusCode()])($exceptionMessage);
     } else {
       throw new Exception('[Unknown Exception] ' . $exceptionMessage);
     }

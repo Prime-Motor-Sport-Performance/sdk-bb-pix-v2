@@ -64,11 +64,10 @@ class Cobranca extends Service implements ICobranca
     $chave,
     $solCnpjItAcaoPagador,
     array $infoAdicionais,
-  )
-  {
+  ) {
 
     $accessToken = $this->clientCredentials->getAccessToken();
-    
+
     $guzzleResponse = $this->guzzleClient->post('cob', [
       'headers' => [
         'Authorization' => 'Bearer ' . $accessToken,
@@ -118,7 +117,7 @@ class Cobranca extends Service implements ICobranca
     int $paginaAtual = 0,
     int $itensPorPagina = 100
   ) {
-    
+
     $accessToken = $this->clientCredentials->getAccessToken();
 
     $guzzleResponse = $this->guzzleClient->get('cob', [
@@ -146,7 +145,6 @@ class Cobranca extends Service implements ICobranca
     } else {
       $this->throwException($response);
     }
-
   }
 
   /**
@@ -154,15 +152,22 @@ class Cobranca extends Service implements ICobranca
    * Method: PUT
    * Endpoint: /cob ou Endpoint: /cob/{txid}
    */
-  public function cirarComTxId($txId)
-  {
-
+  public function cirarComTxId(
+    $txId,
+    $calendarioExpiracao,
+    $devedorCnpj,
+    $devedorNome,
+    $valorOriginal,
+    $chave,
+    $solCnpjItAcaoPagador,
+    array $infoAdicionais,
+  ) {
 
     $accessToken = $this->clientCredentials->getAccessToken();
 
     try {
 
-      $guzzleResponse = $this->guzzleClient->post('cob', [
+      $guzzleResponse = $this->guzzleClient->put('cob/' . $txId, [
         'headers' => [
           'Authorization' => 'Bearer ' . $accessToken,
           'Content-Type' => 'application/json',
@@ -197,7 +202,6 @@ class Cobranca extends Service implements ICobranca
     } catch (Exception $e) {
       throw new Exception($e);
     }
-    
   }
 
   /**
@@ -252,5 +256,4 @@ class Cobranca extends Service implements ICobranca
 
     return $this;
   }
-
 }
