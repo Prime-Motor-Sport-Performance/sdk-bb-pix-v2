@@ -58,7 +58,8 @@ class Cobranca extends Service implements ICobranca
    */
   public function criar(
     $calendarioExpiracao,
-    $devedorCnpj,
+    $devedorCnpj = null,
+    $devedorCpf = null,
     $devedorNome,
     $valorOriginal,
     $chave,
@@ -68,6 +69,36 @@ class Cobranca extends Service implements ICobranca
 
     $accessToken = $this->clientCredentials->getAccessToken();
 
+    $jsonData = [
+      'calendario' => [
+        'expiracao' => $calendarioExpiracao
+      ],
+      'valor' => [
+        'original' => $valorOriginal
+      ],
+      'chave' => $chave,
+      'solcnpjitacaoPagador' => $solCnpjItAcaoPagador,
+      'infoAdicionais' => $infoAdicionais
+    ];
+
+
+    // TODO, quando nem CNPJ e nem CPF for fornecido, throw SemDocumentoException
+    if ($devedorCnpj) {
+
+      $jsonData['devedor'] = [
+        'cnpj' => $devedorCnpj,
+        'nome' => $devedorNome
+      ];
+
+    } else {
+
+      $jsonData['devedor'] = [
+        'cpf' => $devedorCpf,
+        'nome' => $devedorNome
+      ];
+
+    }
+
     $guzzleResponse = $this->guzzleClient->post('cob', [
       'headers' => [
         'Authorization' => 'Bearer ' . $accessToken,
@@ -76,21 +107,7 @@ class Cobranca extends Service implements ICobranca
       'query' => [
         'gw-dev-app-key' => $this->api->devAppKey
       ],
-      'json' => [
-        'calendario' => [
-          'expiracao' => $calendarioExpiracao
-        ],
-        'devedor' => [
-          'cnpj' => $devedorCnpj,
-          'nome' => $devedorNome
-        ],
-        'valor' => [
-          'original' => $valorOriginal
-        ],
-        'chave' => $chave,
-        'solcnpjitacaoPagador' => $solCnpjItAcaoPagador,
-        'infoAdicionais' => $infoAdicionais
-      ],
+      'json' => $jsonData,
     ]);
 
     $response = Response::make($guzzleResponse);
@@ -156,6 +173,7 @@ class Cobranca extends Service implements ICobranca
     $txId,
     $calendarioExpiracao,
     $devedorCnpj,
+    $devedorCpf,
     $devedorNome,
     $valorOriginal,
     $chave,
@@ -164,6 +182,34 @@ class Cobranca extends Service implements ICobranca
   ) {
 
     $accessToken = $this->clientCredentials->getAccessToken();
+
+    $jsonData = [
+      'calendario' => [
+        'expiracao' => $calendarioExpiracao
+      ],
+      'valor' => [
+        'original' => $valorOriginal
+      ],
+      'chave' => $chave,
+      'solcnpjitacaoPagador' => $solCnpjItAcaoPagador,
+      'infoAdicionais' => $infoAdicionais
+    ];
+
+    if ($devedorCnpj) {
+
+      $jsonData['devedor'] = [
+        'cnpj' => $devedorCnpj,
+        'nome' => $devedorNome
+      ];
+
+    } else {
+
+      $jsonData['devedor'] = [
+        'cpf' => $devedorCpf,
+        'nome' => $devedorNome
+      ];
+
+    }
 
     try {
 
@@ -175,21 +221,7 @@ class Cobranca extends Service implements ICobranca
         'query' => [
           'gw-dev-app-key' => $this->api->devAppKey
         ],
-        'json' => [
-          'calendario' => [
-            'expiracao' => $calendarioExpiracao
-          ],
-          'devedor' => [
-            'cnpj' => $devedorCnpj,
-            'nome' => $devedorNome
-          ],
-          'valor' => [
-            'original' => $valorOriginal
-          ],
-          'chave' => $chave,
-          'solcnpjitacaoPagador' => $solCnpjItAcaoPagador,
-          'infoAdicionais' => $infoAdicionais
-        ],
+        'json' => $jsonData,
       ]);
 
       $response = Response::make($guzzleResponse);

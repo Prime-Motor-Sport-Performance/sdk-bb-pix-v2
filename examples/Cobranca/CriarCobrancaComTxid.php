@@ -27,6 +27,7 @@ try {
     "1KaVuFekm5kH9QE2I5azAbJB14",
     3600,
     "12345678000195",
+    '87156053027',
     "Empresa de Serviços SA",
     "37.00",
     "9e881f18-cc66-4fc7-8f2c-a795dbb2bfc1",
