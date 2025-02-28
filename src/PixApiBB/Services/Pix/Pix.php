@@ -80,8 +80,6 @@ class Pix extends Service implements IPix
     $response = Response::make($guzzleResponse);
 
     if ($response->success()) {
-      var_dump("success!", $response->body);
-      die();
       return $response->body;
     } else {
       $this->throwException($response);
@@ -109,8 +107,6 @@ class Pix extends Service implements IPix
     $response = Response::make($guzzleResponse);
 
     if ($response->success()) {
-      var_dump("success!", $response->body);
-      die();
       return $response->body;
     } else {
       $this->throwException($response);

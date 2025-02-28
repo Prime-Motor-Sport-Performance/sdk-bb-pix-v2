@@ -81,7 +81,6 @@ class Cobranca extends Service implements ICobranca
       'infoAdicionais' => $infoAdicionais
     ];
 
-
     // TODO, quando nem CNPJ e nem CPF for fornecido, throw SemDocumentoException
     if ($devedorCnpj) {
 

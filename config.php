@@ -8,12 +8,12 @@ return [
   'api_url' => 'https://api.hm.bb.com.br/pix/v2/', 
   'auth_url' => 'https://oauth.hm.bb.com.br/oauth/token', 
   'debug_mode' => true, 
-
+  'cert' => null,
+  'ssl_key' =>null,
   'chave_pix_bb_email' => 'hmtestes2@bb.com.br',
   'chave_pix_bb_aleatoria' => '9e881f18-cc66-4fc7-8f2c-a795dbb2bfc1',
   'chave_pix_bb_celular' => '+5511985732102',
   'chave_pix_bb_cnpj' => '95127446000198',
-
   'url_api_liquidar_pix' => 'https://api.hm.bb.com.br/testes-portal-desenvolvedor/v1/',
   'endpoint_liquidar_pix' => '/boletos-pix/pagar',
   'liquidar_pix_gw_app_key' => '95cad3f03fd9013a9d15005056825665'

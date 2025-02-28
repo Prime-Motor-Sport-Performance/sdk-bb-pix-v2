@@ -23,21 +23,30 @@ class Service
 
     $this->api = $api;
 
-    $this->guzzleClient = new Client([
+    $guzzleConfig = [
       'http_errors' => false,
       'debug' => $api->debugMode,
       'base_uri' => $api->apiUrl,
       'timeout' => 10,
       'curl' => [
         CURLOPT_SSLVERSION => CURL_SSLVERSION_TLSv1_2, // Force TLS 1.2
-      ],
-    ]);
+      ]
+    ];
 
+    if ($api->cert) {
+      $guzzleConfig['cert'] = $api->cert;
+    }
+
+    if ($api->sslKey) {
+      $guzzleConfig['ssl_key'] = $api->sslKey;
+    }
+
+    $this->guzzleClient = new Client($guzzleConfig);
   }
 
   protected function throwException(Response $response)
   {
-   
+
     $exceptionMessage = json_encode($response->body);
 
     if (array_key_exists($response->guzzleResponse->getStatusCode(), $this->exceptions)) {
@@ -45,6 +54,5 @@ class Service
     } else {
       throw new Exception('[Unknown Exception] ' . $exceptionMessage);
     }
-
   }
 }

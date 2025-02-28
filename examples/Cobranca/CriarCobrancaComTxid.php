@@ -16,6 +16,8 @@ $api = API::make(
   $config['developer_application_key'],
   $config['api_url'],
   $config['auth_url'],
+  $config['cert'],
+  $config['ssl_key'],
   $config['debug_mode'],
 );
 
